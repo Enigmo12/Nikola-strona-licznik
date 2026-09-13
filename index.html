@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nasze następne spotkanie za...</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Quicksand:wght@500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream: #FFF6F8;
+    --blush: #FFD9E6;
+    --pink: #FF8FB3;
+    --rose: #E8577F;
+    --deep-rose: #B23A5B;
+    --plum: #5C2A3D;
+    --gold: #F7C948;
+  }
+
+  *{ box-sizing: border-box; }
+
+  html, body{
+    margin:0;
+    padding:0;
+    height:100%;
+    background: var(--cream);
+    font-family:'Quicksand', sans-serif;
+    color: var(--plum);
+    overflow-x:hidden;
+  }
+
+  /* ---------- BACKGROUND LAYER ---------- */
+  .bg-scene{
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 20% 15%, #FFE3ED 0%, transparent 45%),
+      radial-gradient(circle at 85% 80%, #FFE3ED 0%, transparent 40%),
+      linear-gradient(180deg, #FFF6F8 0%, #FFEAF1 60%, #FFE0EC 100%);
+  }
+
+  .floater{
+    position:absolute;
+    opacity:0.55;
+    will-change: transform;
+  }
+
+  @keyframes drift{
+    0%   { transform: translateY(10vh) translateX(0) rotate(0deg); opacity:0; }
+    10%  { opacity:0.55; }
+    90%  { opacity:0.55; }
+    100% { transform: translateY(-115vh) translateX(30px) rotate(18deg); opacity:0; }
+  }
+
+  /* word-hearts: heart shape built cell-by-cell from the heart curve, filled with
+     "I love you" / "kocham Cię" text — guaranteed correct shape, not a CSS mask */
+  .word-heart{
+    margin:0;
+    color: var(--rose);
+    font-family:'Space Mono', 'Courier New', monospace;
+    font-weight:700;
+    line-height:1;
+    letter-spacing:0;
+    white-space:pre;
+    text-align:center;
+    -webkit-user-select:none;
+    user-select:none;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.55);
+  }
+
+  /* simple bow shape (ribbon), evokes a sweet kitty bow */
+  .bow{ position:absolute; }
+  .bow .tri{
+    position:absolute;
+    width:0; height:0;
+    border-style: solid;
+  }
+  .bow .knot{
+    position:absolute;
+    border-radius:50%;
+  }
+
+  /* plain filled hearts, various sizes, gradient + shine */
+  .plain-heart{ position:absolute; }
+  .plain-heart svg{ width:100%; height:100%; display:block; }
+
+  /* cute kitty face silhouette (generic, rounded, bow on ear) */
+  .kitty{ position:absolute; opacity:0.65; }
+  .kitty svg{ width:100%; height:100%; display:block; }
+
+  /* ---------- CONTENT ---------- */
+  .page{
+    position:relative;
+    z-index:2;
+    min-height:100svh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding: 6vh 5vw 8vh;
+    text-align:center;
+  }
+
+  .eyebrow-heart{
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
+    margin-bottom: 0.4rem;
+    animation: heartbeat 1.8s ease-in-out infinite;
+    color: var(--rose);
+  }
+  @keyframes heartbeat{
+    0%, 100% { transform: scale(1); }
+    15% { transform: scale(1.18); }
+    30% { transform: scale(0.96); }
+    45% { transform: scale(1.1); }
+    60% { transform: scale(1); }
+  }
+
+  h1{
+    font-family:'Baloo 2', sans-serif;
+    font-weight:700;
+    font-size: clamp(1.7rem, 4.4vw, 3.1rem);
+    color: var(--deep-rose);
+    margin: 0 0 3.2rem;
+    line-height:1.25;
+    max-width: 18ch;
+    text-shadow: 0 2px 0 rgba(255,255,255,0.6);
+  }
+
+  .countdown-card{
+    position:relative;
+    background: rgba(255,255,255,0.72);
+    backdrop-filter: blur(6px);
+    border: 3px solid #ffffff;
+    border-radius: 42px 42px 60px 60px / 50px 50px 70px 70px;
+    box-shadow:
+      0 25px 60px -20px rgba(178,58,91,0.35),
+      inset 0 0 0 6px rgba(255,182,206,0.35);
+    padding: clamp(1.8rem, 4vw, 3.6rem) clamp(1.4rem, 5vw, 4rem);
+    animation: pulseCard 3.2s ease-in-out infinite;
+  }
+  @keyframes pulseCard{
+    0%, 100% { box-shadow: 0 25px 60px -20px rgba(178,58,91,0.35), inset 0 0 0 6px rgba(255,182,206,0.35); }
+    50% { box-shadow: 0 30px 70px -18px rgba(178,58,91,0.5), inset 0 0 0 8px rgba(255,182,206,0.5); }
+  }
+
+  .countdown-card::before{
+    content:"♥";
+    position:absolute;
+    top:-26px; left:50%;
+    transform: translateX(-50%);
+    font-size: 2.4rem;
+    color: var(--rose);
+    background: var(--cream);
+    width:56px; height:56px;
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow: 0 6px 18px rgba(178,58,91,0.35);
+  }
+
+  .timer{
+    display:flex;
+    gap: clamp(0.6rem, 2.4vw, 2.2rem);
+    justify-content:center;
+    flex-wrap:wrap;
+  }
+
+  .unit{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    min-width: 4.6em;
+  }
+
+  .unit .num{
+    font-family:'Baloo 2', sans-serif;
+    font-weight:800;
+    font-size: clamp(2.6rem, 9vw, 6.4rem);
+    line-height:1;
+    color: var(--rose);
+    background: linear-gradient(180deg, var(--pink), var(--rose));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .unit .label{
+    margin-top: 0.5rem;
+    font-family:'Quicksand', sans-serif;
+    font-weight:600;
+    font-size: clamp(0.75rem, 1.6vw, 1rem);
+    color: var(--plum);
+    letter-spacing: 0.02em;
+  }
+
+  .sep{
+    font-family:'Baloo 2', sans-serif;
+    font-weight:700;
+    font-size: clamp(2rem, 6vw, 4rem);
+    color: var(--blush);
+    align-self:flex-start;
+    margin-top: 0.1em;
+  }
+
+  .subtext{
+    margin-top: 2.6rem;
+    font-size: clamp(0.95rem, 1.8vw, 1.15rem);
+    color: var(--deep-rose);
+    font-weight:600;
+    max-width: 34ch;
+  }
+
+  .finished{
+    display:none;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .floater, .eyebrow-heart, .countdown-card{ animation: none !important; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="bg-scene" id="bgScene"></div>
+
+  <div class="page">
+    <div class="eyebrow-heart">♥</div>
+    <h1>Nasze następne spotkanie za</h1>
+
+    <div class="countdown-card">
+      <div class="timer" id="timer">
+        <div class="unit"><div class="num" id="days">00</div><div class="label">dni</div></div>
+        <div class="sep">:</div>
+        <div class="unit"><div class="num" id="hours">00</div><div class="label">godzin</div></div>
+        <div class="sep">:</div>
+        <div class="unit"><div class="num" id="minutes">00</div><div class="label">minut</div></div>
+        <div class="sep">:</div>
+        <div class="unit"><div class="num" id="seconds">00</div><div class="label">sekund</div></div>
+      </div>
+      <div class="subtext finished" id="finishedMsg">Już jesteśmy razem! ♥</div>
+    </div>
+
+    <div class="subtext">30 października — liczę godziny do naszego spotkania.</div>
+  </div>
+
+<script>
+  // ---- Live countdown ----
+  const targetDate = new Date(2026, 9, 30, 0, 0, 0); // 30 października 2026, czas lokalny
+
+  function pad(n){ return String(n).padStart(2,'0'); }
+
+  function tick(){
+    const now = new Date();
+    let diff = targetDate - now;
+
+    if(diff <= 0){
+      document.getElementById('timer').style.display = 'none';
+      document.getElementById('finishedMsg').style.display = 'block';
+      return;
+    }
+
+    const d = Math.floor(diff / (1000*60*60*24));
+    diff -= d * (1000*60*60*24);
+    const h = Math.floor(diff / (1000*60*60));
+    diff -= h * (1000*60*60);
+    const m = Math.floor(diff / (1000*60));
+    diff -= m * (1000*60);
+    const s = Math.floor(diff / 1000);
+
+    document.getElementById('days').textContent = pad(d);
+    document.getElementById('hours').textContent = pad(h);
+    document.getElementById('minutes').textContent = pad(m);
+    document.getElementById('seconds').textContent = pad(s);
+  }
+  tick();
+  setInterval(tick, 1000);
+
+  // ---- Background scene: word-hearts, bows, kitty faces ----
+  const scene = document.getElementById('bgScene');
+  const phrases = ["I love you ", "kocham Cię "];
+
+  // Builds a heart shape from the classic implicit heart curve
+  // (x²+y²-1)³ - x²y³ ≤ 0, then fills each "inside" cell with the next
+  // letter of the phrase, so the words visibly trace out a heart.
+  function heartText(rows, phrase){
+    const cols = rows * 2;
+    const xr = [-1.15, 1.15];
+    const yr = [1.15, -0.9];
+    const supply = phrase.repeat(60);
+    let idx = 0;
+    const lines = [];
+    for(let r=0; r<rows; r++){
+      const y = yr[0] + (yr[1]-yr[0]) * (r/(rows-1));
+      let line = '';
+      for(let c=0; c<cols; c++){
+        const x = xr[0] + (xr[1]-xr[0]) * (c/(cols-1));
+        const inside = Math.pow(x*x + y*y - 1, 3) - (x*x)*Math.pow(y,3) <= 0;
+        if(inside){
+          line += supply[idx % supply.length];
+          idx++;
+        } else {
+          line += ' ';
+        }
+      }
+      lines.push(line);
+    }
+    return lines.join('\n');
+  }
+
+  function makeWordHeart(){
+    const el = document.createElement('pre');
+    el.className = 'floater word-heart';
+    const rows = 7 + Math.floor(Math.random()*14); // 7..20 rows tall — small to large
+    const fontSize = 4 + Math.random()*8; // px
+    el.style.fontSize = fontSize + 'px';
+    el.style.left = Math.random()*86 + 'vw';
+    const dur = 15 + Math.random()*16;
+    el.style.animation = `drift ${dur}s linear ${-Math.random()*dur}s infinite`;
+    const phrase = phrases[Math.floor(Math.random()*phrases.length)];
+    el.textContent = heartText(rows, phrase);
+    return el;
+  }
+
+  function makePlainHeart(){
+    const el = document.createElement('div');
+    el.className = 'floater plain-heart';
+    const size = 12 + Math.random()*64; // 12..76px — small to large
+    el.style.width = size + 'px';
+    el.style.height = (size*29/32) + 'px';
+    el.style.left = Math.random()*92 + 'vw';
+    const dur = 14 + Math.random()*16;
+    el.style.animation = `drift ${dur}s linear ${-Math.random()*dur}s infinite`;
+    const tones = ['#E8577F', '#FF6B9D', '#F7729B', '#D6486E'];
+    const c2 = tones[Math.floor(Math.random()*tones.length)];
+    const rot = (Math.random()*40 - 20).toFixed(0);
+    el.innerHTML = `
+      <svg viewBox="0 0 32 29" xmlns="http://www.w3.org/2000/svg" style="transform:rotate(${rot}deg)">
+        <path d="M16 29 C 6 21, 0 15, 0 8.5 C 0 3, 4 0, 8 0 C 11.5 0, 14.5 2, 16 5.5 C 17.5 2, 20.5 0, 24 0 C 28 0, 32 3, 32 8.5 C 32 15, 26 21, 16 29 Z" fill="${c2}"/>
+        <ellipse cx="10" cy="7" rx="3" ry="2" fill="#FFFFFF" opacity="0.5" transform="rotate(-25 10 7)"/>
+      </svg>`;
+    return el;
+  }
+
+  function makeBow(){
+    const wrap = document.createElement('div');
+    wrap.className = 'floater bow';
+    const size = 14 + Math.random()*34;
+    wrap.style.width = size*2 + 'px';
+    wrap.style.height = size + 'px';
+    wrap.style.left = Math.random()*92 + 'vw';
+    const dur = 18 + Math.random()*16;
+    wrap.style.animation = `drift ${dur}s linear ${-Math.random()*dur}s infinite`;
+
+    const colorChoice = Math.random() > 0.4 ? '#FF8FB3' : '#F7C948';
+
+    const triL = document.createElement('div');
+    triL.className = 'tri';
+    triL.style.left = '0';
+    triL.style.top = '0';
+    triL.style.borderWidth = `${size/2}px ${size}px ${size/2}px 0`;
+    triL.style.borderColor = `transparent ${colorChoice} transparent transparent`;
+
+    const triR = document.createElement('div');
+    triR.className = 'tri';
+    triR.style.right = '0';
+    triR.style.top = '0';
+    triR.style.borderWidth = `${size/2}px 0 ${size/2}px ${size}px`;
+    triR.style.borderColor = `transparent transparent transparent ${colorChoice}`;
+
+    const knot = document.createElement('div');
+    knot.className = 'knot';
+    knot.style.width = size*0.36 + 'px';
+    knot.style.height = size*0.36 + 'px';
+    knot.style.left = '50%';
+    knot.style.top = '50%';
+    knot.style.transform = 'translate(-50%,-50%)';
+    knot.style.background = colorChoice;
+
+    wrap.appendChild(triL);
+    wrap.appendChild(triR);
+    wrap.appendChild(knot);
+    return wrap;
+  }
+
+  function makeKitty(){
+    const el = document.createElement('div');
+    el.className = 'floater kitty';
+    const size = 26 + Math.random()*110; // 26..136px — small to large
+    el.style.width = size + 'px';
+    el.style.height = size + 'px';
+    el.style.left = Math.random()*90 + 'vw';
+    const dur = 20 + Math.random()*16;
+    el.style.animation = `drift ${dur}s linear ${-Math.random()*dur}s infinite`;
+
+    el.innerHTML = `
+      <svg viewBox="0 0 100 96" xmlns="http://www.w3.org/2000/svg">
+        <path d="M 24 40 L 15 10 Q 14 6 18 8 L 42 26 Z" fill="#FFFFFF" stroke="#F3B6CC" stroke-width="2.2" stroke-linejoin="round"/>
+        <path d="M 76 40 L 85 10 Q 86 6 82 8 L 58 26 Z" fill="#FFFFFF" stroke="#F3B6CC" stroke-width="2.2" stroke-linejoin="round"/>
+        <path d="M 26 36 L 20 16 L 36 27 Z" fill="#FFD3E3"/>
+        <path d="M 74 36 L 80 16 L 64 27 Z" fill="#FFD3E3"/>
+        <ellipse cx="50" cy="56" rx="36" ry="31" fill="#FFFFFF" stroke="#F3B6CC" stroke-width="2.2"/>
+        <ellipse cx="28" cy="61" rx="7.5" ry="5" fill="#FFC9DD" opacity="0.9"/>
+        <ellipse cx="72" cy="61" rx="7.5" ry="5" fill="#FFC9DD" opacity="0.9"/>
+        <circle cx="38" cy="54" r="3.6" fill="#5C2A3D"/>
+        <circle cx="62" cy="54" r="3.6" fill="#5C2A3D"/>
+        <circle cx="39.3" cy="52.6" r="1.1" fill="#FFFFFF"/>
+        <circle cx="63.3" cy="52.6" r="1.1" fill="#FFFFFF"/>
+        <ellipse cx="50" cy="63" rx="3.4" ry="2.4" fill="#F58FB4"/>
+        <path d="M50 65.4 Q 44.5 71 38 68" stroke="#5C2A3D" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+        <path d="M50 65.4 Q 55.5 71 62 68" stroke="#5C2A3D" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+        <line x1="2" y1="52" x2="28" y2="49" stroke="#5C2A3D" stroke-width="1.2" stroke-linecap="round"/>
+        <line x1="2" y1="59" x2="28" y2="59" stroke="#5C2A3D" stroke-width="1.2" stroke-linecap="round"/>
+        <line x1="72" y1="49" x2="98" y2="52" stroke="#5C2A3D" stroke-width="1.2" stroke-linecap="round"/>
+        <line x1="72" y1="59" x2="98" y2="59" stroke="#5C2A3D" stroke-width="1.2" stroke-linecap="round"/>
+        <g transform="translate(26,17) rotate(-8)">
+          <path d="M0 0 C 6 -6, 14 -6, 14 0 C 14 6, 6 6, 0 0 Z" fill="#FF6FA0" stroke="#E8577F" stroke-width="1"/>
+          <path d="M0 0 C -6 -6, -14 -6, -14 0 C -14 6, -6 6, 0 0 Z" fill="#FF6FA0" stroke="#E8577F" stroke-width="1"/>
+          <circle cx="0" cy="0" r="3.2" fill="#E8577F"/>
+        </g>
+      </svg>`;
+    return el;
+  }
+
+  const builders = [makeWordHeart, makePlainHeart, makeWordHeart, makePlainHeart, makeBow, makeKitty, makePlainHeart];
+  for(let i=0;i<28;i++){
+    const fn = builders[i % builders.length];
+    const el = fn();
+    el.style.top = (100 - Math.random()*20) + 'vh';
+    scene.appendChild(el);
+  }
+</script>
+</body>
+</html>
